@@ -113,6 +113,7 @@ def main():
             and st.session_state["input_OPENAI_API_KEY"] != st.session_state["OPENAI_API_KEY"]
         ):
             st.session_state["OPENAI_API_KEY"] = st.session_state["input_OPENAI_API_KEY"]
+            os.environ["OPENAI_API_KEY"] = st.session_state["OPENAI_API_KEY"]
             st.session_state["llm_chain"] = create_chain()
             with st.spinner("Carregando informações..."):
                 st.session_state["db"] = get_db()
