@@ -32,8 +32,8 @@ st.set_page_config(page_title="OAB-GPT")
 
 
 @st.cache_resource
-def get_db():
-    return ingestor.get_db()
+def get_db(openai_api_key: str):
+    return ingestor.get_db(openai_api_key)
 
 
 def is_openai_api_key_set() -> bool:
@@ -41,7 +41,7 @@ def is_openai_api_key_set() -> bool:
 
 
 @st.cache_resource
-def create_chain():
+def create_chain(openai_api_key: str):
     template = """Dado o seguinte contexto, a questão, e as opções de resposta, analise cada opção se está correta ou errada e justifique. Somente uma opção está correta.
 
 Contexto:
@@ -55,7 +55,7 @@ Opções:
 
 Justificativa:"""
     prompt = PromptTemplate(template=template, input_variables=["context", "question", "options"])
-    return LLMChain(prompt=prompt, llm=OpenAI(temperature=0, max_tokens=512), verbose=False)
+    return LLMChain(prompt=prompt, llm=OpenAI(temperature=0, max_tokens=512, openai_api_key=openai_api_key), verbose=False)
 
 
 def build_context(query: str) -> list[str]:
@@ -97,9 +97,9 @@ def main():
     if len(st.session_state) == 0:
         st.session_state["OPENAI_API_KEY"] = os.environ.get("OPENAI_API_KEY", "")
         if is_openai_api_key_set():
-            st.session_state["llm_chain"] = create_chain()
+            st.session_state["llm_chain"] = create_chain(st.session_state["OPENAI_API_KEY"])
             with st.spinner("Carregando informações..."):
-                st.session_state["db"] = get_db()
+                st.session_state["db"] = get_db(st.session_state["OPENAI_API_KEY"])
         else:
             st.session_state["llm_chain"] = None
             st.session_state["db"] = None
@@ -113,10 +113,9 @@ def main():
             and st.session_state["input_OPENAI_API_KEY"] != st.session_state["OPENAI_API_KEY"]
         ):
             st.session_state["OPENAI_API_KEY"] = st.session_state["input_OPENAI_API_KEY"]
-            os.environ["OPENAI_API_KEY"] = st.session_state["OPENAI_API_KEY"]
-            st.session_state["llm_chain"] = create_chain()
+            st.session_state["llm_chain"] = create_chain(st.session_state["OPENAI_API_KEY"])
             with st.spinner("Carregando informações..."):
-                st.session_state["db"] = get_db()
+                st.session_state["db"] = get_db(st.session_state["OPENAI_API_KEY"])
 
     # st.subheader("Carregue uma prova da OAB")
     # st.file_uploader(

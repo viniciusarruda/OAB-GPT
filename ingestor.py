@@ -11,9 +11,9 @@ from langchain.vectorstores import FAISS
 import gdown
 
 
-def get_db():
+def get_db(openai_api_key: str):
     index_folder = os.path.join("data", "faiss_index")
-    embeddings = OpenAIEmbeddings()
+    embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
 
     if not os.path.exists(index_folder):
         # https://drive.google.com/drive/folders/1v3o7i-ONbVY2F6Wh-2_-ucYCLRAUMBxq?usp=share_link
