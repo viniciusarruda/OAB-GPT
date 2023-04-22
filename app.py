@@ -1,18 +1,15 @@
 import os
-
-# import tempfile
 import streamlit as st
 from langchain.chains import LLMChain
 from langchain.prompts.prompt import PromptTemplate
 from langchain.llms import OpenAI
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.vectorstores import FAISS
 
-# from langchain.document_loaders import PyPDFLoader
+import ingestor
 
 # from pprint import pprint
 
 st.set_page_config(page_title="OAB-GPT")
+
 
 # TODO: load a OAB exam. Problem: Correctly format the PDF
 # def read_and_save_file():
@@ -34,10 +31,16 @@ st.set_page_config(page_title="OAB-GPT")
 #         st.divider()
 
 
+@st.cache_resource
+def get_db():
+    return ingestor.get_db()
+
+
 def is_openai_api_key_set() -> bool:
     return len(st.session_state["OPENAI_API_KEY"]) > 0
 
 
+@st.cache_resource
 def create_chain():
     template = """Dado o seguinte contexto, a questão, e as opções de resposta, analise cada opção se está correta ou errada e justifique. Somente uma opção está correta.
 
@@ -52,7 +55,7 @@ Opções:
 
 Justificativa:"""
     prompt = PromptTemplate(template=template, input_variables=["context", "question", "options"])
-    return LLMChain(prompt=prompt, llm=OpenAI(temperature=0), verbose=False)
+    return LLMChain(prompt=prompt, llm=OpenAI(temperature=0, max_tokens=512), verbose=False)
 
 
 def build_context(query: str) -> list[str]:
@@ -92,11 +95,11 @@ def main():
         )
 
     if len(st.session_state) == 0:
-        st.session_state["messages"] = []
         st.session_state["OPENAI_API_KEY"] = os.environ.get("OPENAI_API_KEY", "")
         if is_openai_api_key_set():
             st.session_state["llm_chain"] = create_chain()
-            st.session_state["db"] = FAISS.load_local(os.path.join("data", "faiss_index"), OpenAIEmbeddings())
+            with st.spinner("Carregando informações..."):
+                st.session_state["db"] = get_db()
         else:
             st.session_state["llm_chain"] = None
             st.session_state["db"] = None
@@ -112,7 +115,6 @@ def main():
             st.session_state["OPENAI_API_KEY"] = st.session_state["input_OPENAI_API_KEY"]
             if st.session_state["llm_chain"] is not None:
                 st.warning("Please, upload the files again.")
-            st.session_state["messages"] = []
             st.session_state["question"] = ""
             # TODO
 
@@ -138,12 +140,10 @@ def main():
         with st.spinner("Pensando..."):
             prediction = st.session_state["llm_chain"].predict(
                 context=build_context(st.session_state["question"]),
-                # + "\n"
-                # + "\n- ".join([build_context(st.session_state[option]) for option in options]),
                 question=st.session_state["question"],
                 options="\n- ".join([f"{option}) " + st.session_state[option] for option in options]),
             )
-            placeholder["D"].markdown(str(prediction))
+            placeholder.markdown(str(prediction))
 
 
 if __name__ == "__main__":
