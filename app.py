@@ -113,10 +113,9 @@ def main():
             and st.session_state["input_OPENAI_API_KEY"] != st.session_state["OPENAI_API_KEY"]
         ):
             st.session_state["OPENAI_API_KEY"] = st.session_state["input_OPENAI_API_KEY"]
-            if st.session_state["llm_chain"] is not None:
-                st.warning("Please, upload the files again.")
-            st.session_state["question"] = ""
-            # TODO
+            st.session_state["llm_chain"] = create_chain()
+            with st.spinner("Carregando informações..."):
+                st.session_state["db"] = get_db()
 
     # st.subheader("Carregue uma prova da OAB")
     # st.file_uploader(
