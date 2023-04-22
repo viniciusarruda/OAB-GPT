@@ -1,10 +1,14 @@
 # OAB-GPT
 
-<div style="position: relative; padding-bottom: 53.75%; height: 0;"><iframe src="https://www.loom.com/embed/904a8cff73b844c798d37dc0d45dc6b2" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
-
 Ask any OAB exam question and get the correct answer.
 
-[Live Demo](https://oabgpt.streamlit.app/)
+### [Live Demo](https://oabgpt.streamlit.app/)
+
+### Demonstration Video:
+
+<a target="_blank" rel="noopener noreferrer" href="https://www.loom.com/share/904a8cff73b844c798d37dc0d45dc6b2">
+    <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/904a8cff73b844c798d37dc0d45dc6b2-with-play.gif">
+</a>
 
 ## Installation
 
