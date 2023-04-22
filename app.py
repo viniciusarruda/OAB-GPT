@@ -10,7 +10,6 @@ import ingestor
 
 st.set_page_config(page_title="OAB-GPT")
 
-
 # TODO: load a OAB exam. Problem: Correctly format the PDF
 # def read_and_save_file():
 #     if st.session_state["file_uploader"]:
@@ -71,6 +70,9 @@ def main():
         st.title(":bookmark_tabs: OAB-GPT")
 
         st.header("Como funciona?")
+
+        st.markdown("Video de demonstração [aqui](https://www.loom.com/share/904a8cff73b844c798d37dc0d45dc6b2).")
+
         st.subheader('1. Insira a chave da API no campo "OpenAI API Key".')
         st.markdown(
             "Para acessar sua chave, acesse [aqui](https://platform.openai.com/account/api-keys). Caso tiver dúvidas, assista este [tutorial](https://www.youtube.com/watch?v=Kfuh4v_hqnw&ab_channel=GianCampos) de 1 minuto."
